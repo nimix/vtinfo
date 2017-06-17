@@ -60,6 +60,7 @@ NAN_METHOD(info)
             std::uint64_t polygon_feature_count = 0;
             std::uint64_t invalid_feature_count = 0;
             std::uint64_t features_count = 0;
+            std::uint64_t features_size = 0;
 
             // set up vector for keys
             std::vector<protozero::data_view> keys_vector;
@@ -74,6 +75,7 @@ NAN_METHOD(info)
                         // create feature reader
                         auto feature_data = layer.get_data();
                         protozero::pbf_reader feature(feature_data);
+                        features_size += feature.length();
 
                         // loop through feature GeomType
                         while (feature.next(3)) {
@@ -135,6 +137,7 @@ NAN_METHOD(info)
             layer_obj->Set(Nan::New("line_features").ToLocalChecked(), Nan::New<v8::Number>(line_feature_count));
             layer_obj->Set(Nan::New("polygon_features").ToLocalChecked(), Nan::New<v8::Number>(polygon_feature_count));
             layer_obj->Set(Nan::New("invalid_features").ToLocalChecked(), Nan::New<v8::Number>(invalid_feature_count));
+            layer_obj->Set(Nan::New("features_size").ToLocalChecked(), Nan::New<v8::Number>(features_size));
             layer_obj->Set(Nan::New("keys").ToLocalChecked(), keys);
 
             // add layer object to final layers array
